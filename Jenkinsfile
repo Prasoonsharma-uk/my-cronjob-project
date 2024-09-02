@@ -4,8 +4,8 @@ pipeline {
         string(name: 'VERSION', defaultValue: 'latest', description: 'Docker image version')
     }
     environment {
-        REGISTRY = 'my-docker-registry'
-        IMAGE = 'my-cron-job-app'
+        REGISTRY = 'prasoonshrama25'
+        IMAGE = 'k8s-deployment-dockerimage:0.0.2'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     stages {
