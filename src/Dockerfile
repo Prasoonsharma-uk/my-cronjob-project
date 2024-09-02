@@ -1,13 +1,16 @@
+# Use the official Node.js image
 FROM node:16-alpine
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy application source
+# Copy the application source code
 COPY ./scripts/ .
 
 # Run the cron task script
