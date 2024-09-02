@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy application source
-COPY scripts/ .
+COPY ./scripts/ .
 
 # Run the cron task script
 CMD ["node", "cronTask.js"]
