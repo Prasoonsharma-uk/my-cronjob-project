@@ -1,6 +1,9 @@
 # Set the working directory
 WORKDIR /app
 
+# Copy package.json and package-lock.json
+COPY src/package*.json ./
+
 # List files to debug
 RUN ls -la
 
