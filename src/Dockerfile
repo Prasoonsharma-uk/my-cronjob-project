@@ -1,6 +1,3 @@
-# Use the official Node.js image
-FROM node:16-alpine
-
 # Set working directory
 WORKDIR /app
 
@@ -9,7 +6,9 @@ COPY package*.json ./
 RUN npm install
 
 # Copy application source
-COPY scripts/ .
+# Since the Dockerfile is in the 'src' folder, and 'scripts' is relative to it,
+# you just need to copy it directly.
+COPY scripts/ ./scripts/
 
 # Run the cron task script
-CMD ["node", "cronTask.js"]
+CMD ["node", "scripts/cronTask.js"]
