@@ -1,11 +1,11 @@
-# Use the official Node.js image
-FROM node:16-alpine
-
 # Set the working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
+
+# List files to debug
+RUN ls -la
 
 # Install dependencies
 RUN npm install
