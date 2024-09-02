@@ -1,11 +1,11 @@
 image:
-  repository: my-cron-job-app
+  repository: prasoonshrama25/k8s-deployment-dockerimage
   tag: "latest" # Default version
 
 cronJobs:
   - name: cronjob-1
     schedule: "0 0 * * *"
-    version: "latest"
+    version: "latest" # Version can be overridden if needed
   - name: cronjob-2
     schedule: "0 6 * * *"
-    version: "latest"
+    version: "latest" # Version can be overridden if needed
