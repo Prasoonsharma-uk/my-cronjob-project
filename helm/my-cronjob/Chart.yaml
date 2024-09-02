@@ -1,0 +1,4 @@
+apiVersion: v2
+name: my-cronjob
+description: A Helm chart for deploying cron jobs
+version: 1.0.0

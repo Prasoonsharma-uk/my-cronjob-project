@@ -1,0 +1,12 @@
+{
+  "name": "my-cronjob",
+  "version": "1.0.0",
+  "description": "Cron job application",
+  "main": "scripts/cronTask.js",
+  "scripts": {
+    "start": "node scripts/cronTask.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}

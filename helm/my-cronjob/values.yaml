@@ -1,0 +1,11 @@
+image:
+  repository: my-cron-job-app
+  tag: "latest" # Default version
+
+cronJobs:
+  - name: cronjob-1
+    schedule: "0 0 * * *"
+    version: "latest"
+  - name: cronjob-2
+    schedule: "0 6 * * *"
+    version: "latest"
