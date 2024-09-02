@@ -5,7 +5,8 @@ pipeline {
     }
     environment {
         REGISTRY = 'prasoonshrama25'
-        IMAGE = 'k8s-deployment-dockerimage:0.0.2'
+        IMAGE = 'k8s-deployment-dockerimage'
+        TAG = '0.0.2'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     stages {
