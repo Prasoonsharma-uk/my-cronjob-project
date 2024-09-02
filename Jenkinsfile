@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.build("${REGISTRY}/${IMAGE}:${params.VERSION}", "-f ../src/Dockerfile .")
+                    docker.build("${REGISTRY}/${IMAGE}:${params.VERSION}", "-f src/Dockerfile .")
                 }
             }
         }
