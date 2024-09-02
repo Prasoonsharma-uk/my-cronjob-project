@@ -1,14 +1,14 @@
-# Set the working directory
+FROM node:16-alpine
+
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY src/package*.json ./
-
 # Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy the application source code
-COPY . .
+# Copy application source
+COPY scripts/ .
 
 # Run the cron task script
 CMD ["node", "cronTask.js"]
