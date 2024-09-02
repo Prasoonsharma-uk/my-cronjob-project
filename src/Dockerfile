@@ -1,17 +1,14 @@
-# Use an official Node runtime as a parent image
-FROM node:14
+FROM node:16-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
 # Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy application source code and scripts to the working directory
-COPY ./scripts/ /src
+# Copy application source
+COPY scripts/ .
 
 # Run the cron task script
-CMD ["node", "scripts/cronTask.js"]
+CMD ["node", "cronTask.js"]
