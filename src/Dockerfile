@@ -1,3 +1,6 @@
+# Use an official Node runtime as a parent image
+FROM node:14
+
 # Set working directory
 WORKDIR /app
 
