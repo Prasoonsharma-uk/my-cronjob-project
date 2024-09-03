@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     bat '''
-                        echo "Installing Helm..."
+                        echo Installing Helm...
 
                         :: Download Helm installation script
                         curl -fsSL -o get_helm.bat https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -56,9 +56,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Deploy to Kubernetes using Helm
                     withKubeConfig([credentialsId: 'kubeconfig']) {
-                        bat "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
+                        bat '''
+                            echo Deploying to Kubernetes...
+                            helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=%VERSION%
+                        '''
                     }
                 }
             }
