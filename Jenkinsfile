@@ -54,19 +54,21 @@ pipeline {
             }
         }
         stage('Deploy') {
-    steps {
-        script {
-            withKubeConfig([credentialsId: 'kubeconfig']) {
-                bat '''
-                    echo Checking Kubernetes context...
-                    kubectl config current-context
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'kubeconfig']) {
+                        bat '''
+                            echo Checking Kubernetes context...
+                            kubectl config current-context
 
-                    echo Checking cluster info...
-                    kubectl cluster-info
+                            echo Checking cluster info...
+                            kubectl cluster-info
 
-                    echo Deploying to Kubernetes...
-                    helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=%VERSION%
-                '''
+                            echo Deploying to Kubernetes...
+                            helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=%VERSION%
+                        '''
+                    }
+                }
             }
         }
     }
