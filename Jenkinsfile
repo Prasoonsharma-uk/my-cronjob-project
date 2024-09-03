@@ -20,7 +20,10 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    docker.image("${REGISTRY}/${IMAGE}:${params.VERSION}").push()
+                    // Push Docker image to the registry with the specified tag
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-credentials-id') {
+                        docker.image("${REGISTRY}/${IMAGE}:${params.VERSION}").push()
+                    }
                 }
             }
         }
