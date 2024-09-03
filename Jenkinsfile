@@ -1,5 +1,31 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+              - name: docker
+                image: docker:20.10.8
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+              - name: kubectl
+                image: bitnami/kubectl:1.23.3
+                command:
+                - cat
+                tty: true
+            volumes:
+            - name: docker-socket
+              hostPath:
+                path: /var/run/docker.sock
+            '''
+        }
+    }
     parameters {
         string(name: 'VERSION', defaultValue: 'latest', description: 'Docker image version')
     }
@@ -14,33 +40,30 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                script {
-                    // Build Docker image with the specified version
-                    bat "docker build -t ${REGISTRY}/${IMAGE}:${params.VERSION} -f src/Dockerfile ."
+                container('docker') {
+                    sh "docker build -t ${REGISTRY}/${IMAGE}:${params.VERSION} -f src/Dockerfile ."
                 }
             }
         }
         stage('Push') {
             steps {
-                script {
-                    // Push Docker image to the registry with the specified tag
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        bat "docker push ${REGISTRY}/${IMAGE}:${params.VERSION}"
+                container('docker') {
+                    script {
+                        withDockerRegistry([url: 'https://index.docker.io/v1/', credentialsId: DOCKER_CREDENTIALS_ID]) {
+                            sh "docker push ${REGISTRY}/${IMAGE}:${params.VERSION}"
+                        }
                     }
                 }
             }
         }
         stage('Deploy') {
             steps {
-                script {
-                    withKubeConfig([credentialsId: 'kubeconfig']) {
-                        bat '''
+                container('kubectl') {
+                    script {
+                        sh '''
                             echo Deploying to Kubernetes...
 
-                            :: Set the Kubernetes deployment image in the specified namespace
                             kubectl set image deployment/my-cronjob my-container=${REGISTRY}/${IMAGE}:${VERSION} --namespace=${K8S_NAMESPACE}
-
-                            :: Rollout the deployment in the specified namespace
                             kubectl rollout status deployment/my-cronjob --namespace=${K8S_NAMESPACE}
                         '''
                     }
