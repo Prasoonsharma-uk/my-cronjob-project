@@ -6,10 +6,12 @@ pipeline {
     environment {
         REGISTRY = 'prasoonshrama25'
         IMAGE = 'k8s-deployment-dockerimage'
-        TAG = '0.0.2'
+        TAG = "${params.VERSION}"  // Use the version parameter for tagging
+        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         KUBE_CONFIG = credentials('kubeconfig')
     }
-    stage('Install Helm') {
+    stages {
+        stage('Install Helm') {
             steps {
                 script {
                     // Ensure you are in a directory where you can run the commands
@@ -34,10 +36,10 @@ pipeline {
                 }
             }
         }
-    stages {
         stage('Build') {
             steps {
                 script {
+                    // Build Docker image with the specified version
                     docker.build("${REGISTRY}/${IMAGE}:${params.VERSION}", "-f src/Dockerfile .")
                 }
             }
@@ -46,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Push Docker image to the registry with the specified tag
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-credentials-id') {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         docker.image("${REGISTRY}/${IMAGE}:${params.VERSION}").push()
                     }
                 }
@@ -54,8 +56,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                withKubeConfig([credentialsId: 'kubeconfig']) {
-                    sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
+                script {
+                    // Deploy to Kubernetes using Helm
+                    withKubeConfig([credentialsId: 'kubeconfig']) {
+                        sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
+                    }
                 }
             }
         }
