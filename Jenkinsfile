@@ -6,7 +6,7 @@ pipeline {
     environment {
         REGISTRY = 'prasoonshrama25'
         IMAGE = 'k8s-deployment-dockerimage'
-        TAG = "${params.VERSION}"  // Use the version parameter for tagging
+        TAG = "${params.VERSION}" // Use the version parameter for tagging
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         KUBE_CONFIG = credentials('kubeconfig')
     }
@@ -54,10 +54,8 @@ pipeline {
                 }
             }
         }
-         stage('Deploy') {
+        stage('Deploy') {
             steps {
-                withKubeConfig([credentialsId: 'kubeconfig']) {
-                    sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
                 script {
                     // Deploy to Kubernetes using Helm
                     withKubeConfig([credentialsId: 'kubeconfig']) {
@@ -66,6 +64,5 @@ pipeline {
                 }
             }
         }
-
     }
 }
