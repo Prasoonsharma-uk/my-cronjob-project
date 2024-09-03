@@ -9,6 +9,31 @@ pipeline {
         TAG = '0.0.2'
         KUBE_CONFIG = credentials('kubeconfig')
     }
+    stage('Install Helm') {
+            steps {
+                script {
+                    // Ensure you are in a directory where you can run the commands
+                    sh '''
+                        echo "Installing Helm..."
+
+                        # Download Helm installation script
+                        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+
+                        # Make the script executable
+                        chmod 700 get_helm.sh
+
+                        # Run the script to install Helm
+                        ./get_helm.sh
+
+                        # Clean up the installation script
+                        rm get_helm.sh
+
+                        # Verify Helm installation
+                        helm version
+                    '''
+                }
+            }
+        }
     stages {
         stage('Build') {
             steps {
