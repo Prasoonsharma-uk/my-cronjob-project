@@ -9,6 +9,7 @@ pipeline {
         TAG = "${params.VERSION}" // Use the version parameter for tagging
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         KUBE_CONFIG = credentials('kubeconfig')
+        K8S_NAMESPACE = 'jenkins' // Set your desired namespace here
     }
     stages {
         stage('Build') {
@@ -36,11 +37,11 @@ pipeline {
                         bat '''
                             echo Deploying to Kubernetes...
 
-                            :: Set the Kubernetes deployment image
-                            kubectl set image deployment/my-cronjob my-container=${REGISTRY}/${IMAGE}:${VERSION} --record
+                            :: Set the Kubernetes deployment image in the specified namespace
+                            kubectl set image deployment/my-cronjob my-container=${REGISTRY}/${IMAGE}:${VERSION} --namespace=${K8S_NAMESPACE}
 
-                            :: Rollout the deployment
-                            kubectl rollout status deployment/my-cronjob
+                            :: Rollout the deployment in the specified namespace
+                            kubectl rollout status deployment/my-cronjob --namespace=${K8S_NAMESPACE}
                         '''
                     }
                 }
