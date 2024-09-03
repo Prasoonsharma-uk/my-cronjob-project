@@ -4,7 +4,7 @@ FROM node:16-alpine
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY src/package*.json ./
 RUN npm install
 
 # Copy application source
