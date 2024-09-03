@@ -11,30 +11,6 @@ pipeline {
         KUBE_CONFIG = credentials('kubeconfig')
     }
     stages {
-        stage('Install Helm') {
-            steps {
-                script {
-                    bat '''
-                        echo Installing Helm...
-
-                        :: Download Helm installation script
-                        curl -fsSL -o get_helm.bat https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-
-                        :: Make the script executable
-                        chmod 700 get_helm.bat
-
-                        :: Run the script to install Helm
-                        get_helm.bat
-
-                        :: Clean up the installation script
-                        del get_helm.bat
-
-                        :: Verify Helm installation
-                        helm version
-                    '''
-                }
-            }
-        }
         stage('Build') {
             steps {
                 script {
@@ -59,7 +35,12 @@ pipeline {
                     withKubeConfig([credentialsId: 'kubeconfig']) {
                         bat '''
                             echo Deploying to Kubernetes...
-                            helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=%VERSION%
+
+                            :: Set the Kubernetes deployment image
+                            kubectl set image deployment/my-cronjob my-container=${REGISTRY}/${IMAGE}:${VERSION} --record
+
+                            :: Rollout the deployment
+                            kubectl rollout status deployment/my-cronjob
                         '''
                     }
                 }
