@@ -6,9 +6,9 @@ pipeline {
     environment {
         REGISTRY = 'prasoonshrama25'
         IMAGE = 'k8s-deployment-dockerimage'
-        TAG = "${params.VERSION}" // Use the version parameter for tagging
+        TAG = "${params.VERSION}"  // Use the version parameter for tagging
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
-        KUBE_CONFIG = credentials('kubeconfig')
+        KUBE_CONFIG = '/home/vagrant/.kube/config'
     }
     stages {
         stage('Install Helm') {
