@@ -8,7 +8,7 @@ pipeline {
         IMAGE = 'k8s-deployment-dockerimage'
         TAG = "${params.VERSION}"  // Use the version parameter for tagging
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
-        KUBE_CONFIG = credentials('kubeconfig')
+        KUBE_CONFIG = '/home/vagrant/.kube/config'
     }
     stages {
         stage('Install Helm') {
@@ -57,12 +57,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Deploy to Kubernetes using Helm
-                    withKubeConfig([credentialsId: 'kubeconfig']) {
-                        sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
-                    }
+                    sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=latest"
+                }
                 }
             }
         }
     }
-}
+
