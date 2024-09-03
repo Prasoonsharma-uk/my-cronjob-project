@@ -6,31 +6,30 @@ pipeline {
     environment {
         REGISTRY = 'prasoonshrama25'
         IMAGE = 'k8s-deployment-dockerimage'
-        TAG = "${params.VERSION}"  // Use the version parameter for tagging
+        TAG = "${params.VERSION}" // Use the version parameter for tagging
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
-        KUBE_CONFIG = '/home/vagrant/.kube/config'
+        KUBE_CONFIG = credentials('kubeconfig')
     }
     stages {
         stage('Install Helm') {
             steps {
                 script {
-                    // Ensure you are in a directory where you can run the commands
-                    sh '''
+                    bat '''
                         echo "Installing Helm..."
 
-                        # Download Helm installation script
-                        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+                        :: Download Helm installation script
+                        curl -fsSL -o get_helm.bat https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 
-                        # Make the script executable
-                        chmod 700 get_helm.sh
+                        :: Make the script executable
+                        chmod 700 get_helm.bat
 
-                        # Run the script to install Helm
-                        ./get_helm.sh
+                        :: Run the script to install Helm
+                        get_helm.bat
 
-                        # Clean up the installation script
-                        rm get_helm.sh
+                        :: Clean up the installation script
+                        del get_helm.bat
 
-                        # Verify Helm installation
+                        :: Verify Helm installation
                         helm version
                     '''
                 }
@@ -40,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image with the specified version
-                    docker.build("${REGISTRY}/${IMAGE}:${params.VERSION}", "-f src/Dockerfile .")
+                    bat "docker build -t ${REGISTRY}/${IMAGE}:${params.VERSION} -f src/Dockerfile ."
                 }
             }
         }
@@ -49,7 +48,7 @@ pipeline {
                 script {
                     // Push Docker image to the registry with the specified tag
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        docker.image("${REGISTRY}/${IMAGE}:${params.VERSION}").push()
+                        bat "docker push ${REGISTRY}/${IMAGE}:${params.VERSION}"
                     }
                 }
             }
@@ -59,7 +58,7 @@ pipeline {
                 script {
                     // Deploy to Kubernetes using Helm
                     withKubeConfig([credentialsId: 'kubeconfig']) {
-                        sh "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
+                        bat "helm upgrade --install my-cronjob ./helm/my-cronjob --set image.tag=${params.VERSION}"
                     }
                 }
             }
